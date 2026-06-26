@@ -160,4 +160,6 @@ MONGODB_URI=
 
 **Dhyaanesh G**
 
+ZF Groups | AI R&D Intern
+
 NIT Trichy
