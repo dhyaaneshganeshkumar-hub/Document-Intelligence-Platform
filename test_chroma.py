@@ -28,3 +28,4 @@ for i in range(len(docs["documents"])):
     print(docs["documents"][i][:250])
 
     print()
+    

@@ -29,13 +29,13 @@ if "current_file" not in st.session_state:
 # -----------------------------
 # Header
 # -----------------------------
-st.title("Automotive AI Buddy")
+st.title("Document Inteligence Platform")
 st.caption("Upload any PDF and chat with it using Azure OpenAI + MongoDB RAG")
 
 # -----------------------------
 # Sidebar
 # -----------------------------
-st.sidebar.title("Automotive AI")
+st.sidebar.title("Document Inteligence")
 st.sidebar.markdown("---")
 
 uploaded_files = st.sidebar.file_uploader(
