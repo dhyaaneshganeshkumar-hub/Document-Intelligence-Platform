@@ -6,18 +6,18 @@ Upload PDFs, automatically generate embeddings, search across documents, and cha
 
 ---
 
-# 🚀 Features
+# Features
 
-- 📂 Upload PDF documents
-- 🧠 Automatic embedding generation
-- 💬 Chat with uploaded documents
-- 🔍 Search across all documents or a selected document
+- Upload PDF documents
+- Automatic embedding generation
+- Chat with uploaded documents
+- Search across all documents or a selected document
 - 🗑 Delete unwanted documents
-- 🚫 Duplicate document detection
-- 🧹 Clear chat history
-- ⚡ Azure OpenAI integration
-- 📦 Chroma Vector Database
-- 📁 Document Registry Management
+- Duplicate document detection
+- Clear chat history
+- Azure OpenAI integration
+- Chroma Vector Database
+- Document Registry Management
 
 ---
 
@@ -161,5 +161,3 @@ MONGODB_URI=
 **Dhyaanesh G**
 
 NIT Trichy
-
-AI • LLMs • RAG • Document Intelligence
