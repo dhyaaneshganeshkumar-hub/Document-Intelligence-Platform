@@ -10,7 +10,7 @@ from src.vector_store import delete_document
 # Page Config
 # -----------------------------
 st.set_page_config(
-    page_title="Automotive AI Buddy",
+    page_title="Document Inteligence Platform",
     layout="wide"
 )
 
