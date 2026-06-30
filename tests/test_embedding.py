@@ -1,4 +1,4 @@
-from src.embedding import embeddings
+from src.ingestion.embedding import embeddings
 
 vector = embeddings.embed_query("CAN FD communication")
 

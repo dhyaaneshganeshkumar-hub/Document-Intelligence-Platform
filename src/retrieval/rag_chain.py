@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import AzureChatOpenAI
 
-from src.retriever import retrieve
+from src.retrieval.retriever import retrieve
 
 import os
 

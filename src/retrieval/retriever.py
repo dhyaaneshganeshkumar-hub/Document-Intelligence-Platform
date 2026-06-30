@@ -1,4 +1,4 @@
-from src.vector_store import vector_store
+from src.storage.vector_store import vector_store
 
 def retrieve(query, selected_document=None, top_k=3):
 

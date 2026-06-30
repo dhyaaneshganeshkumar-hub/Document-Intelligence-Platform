@@ -1,4 +1,4 @@
-from src.mongo_store import collection 
+from src.storage.mongo_store import collection 
 
 sample_doc = {
     "test" : "CAN FD support payloadsup to 64 bytes",

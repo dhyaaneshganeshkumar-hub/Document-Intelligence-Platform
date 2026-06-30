@@ -1,7 +1,7 @@
 from langchain_chroma import Chroma
 
-from src.embedding import embeddings
-from src.document_registry import remove_document
+from src.ingestion.embedding import embeddings
+from src.storage.document_registry import remove_document
 
 VECTOR_DB_PATH = "vector_db"
 

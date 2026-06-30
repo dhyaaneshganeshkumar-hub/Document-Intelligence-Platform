@@ -1,7 +1,7 @@
-from src.loader import load_pdf
-from src.splitter import split_documents
-from src.embedding import embeddings
-from src.mongo_store import store_chunks
+from src.ingestion.loader import load_pdf
+from src.ingestion.splitter import split_documents
+from src.ingestion.embedding import embeddings
+from src.storage.mongo_store import store_chunks
 
 docs = load_pdf("data/sample.pdf")
 

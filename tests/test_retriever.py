@@ -1,4 +1,4 @@
-from src.retriever import retrieve
+from src.retrieval.retriever import retrieve
 
 docs = retrieve("CAN FD communications")
 

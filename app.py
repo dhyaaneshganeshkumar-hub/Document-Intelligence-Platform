@@ -1,10 +1,10 @@
 import os
 import streamlit as st
 
-from src.rag_chain import ask
-from src.ingest import ingest_pdf
-from src.document_registry import get_document_names
-from src.vector_store import delete_document
+from src.retrieval.rag_chain import ask
+from src.ingestion.ingest import ingest_pdf
+from src.storage.document_registry import get_document_names
+from src.storage.vector_store import delete_document
 
 # -----------------------------
 # Page Config
@@ -29,13 +29,13 @@ if "current_file" not in st.session_state:
 # -----------------------------
 # Header
 # -----------------------------
-st.title("Document Inteligence Platform")
+st.title("Automotive AI Buddy")
 st.caption("Upload any PDF and chat with it using Azure OpenAI + MongoDB RAG")
 
 # -----------------------------
 # Sidebar
 # -----------------------------
-st.sidebar.title("Document Inteligence")
+st.sidebar.title("Automotive AI")
 st.sidebar.markdown("---")
 
 uploaded_files = st.sidebar.file_uploader(

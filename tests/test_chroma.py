@@ -1,4 +1,4 @@
-from src.vector_store import vector_store
+from src.storage.vector_store import vector_store
 
 docs = vector_store.get(
     include = ["documents", "metadatas"],

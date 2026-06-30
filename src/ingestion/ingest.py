@@ -1,9 +1,9 @@
 import os
 
-from src.loader import load_pdf
-from src.splitter import split_documents
-from src.vector_store import vector_store, document_exists
-from src.document_registry import add_document
+from src.ingestion.loader import load_pdf
+from src.ingestion.splitter import split_documents
+from src.storage.vector_store import vector_store, document_exists
+from src.storage.document_registry import add_document
 
 
 def ingest_pdf(filepath):

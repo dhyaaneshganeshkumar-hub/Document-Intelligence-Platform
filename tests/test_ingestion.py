@@ -1,5 +1,5 @@
-from src.loader import load_pdf
-from src.splitter import split_documents
+from src.ingestion.loader import load_pdf
+from src.ingestion.splitter import split_documents
 
 docs = load_pdf("data/sample.pdf")
 
