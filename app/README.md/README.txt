@@ -1,165 +1,230 @@
-# 📄 Document Intelligence Platform
+# 🚗 Automotive Document Intelligence Platform
 
-An AI-powered Document Intelligence Platform built using **Python, Streamlit, Azure OpenAI, ChromaDB, and MongoDB**.
+An AI-powered document intelligence platform built for automotive engineering workflows. The application enables users to upload technical PDF documents, generate semantic embeddings, build a lightweight knowledge graph, and chat with documents using Retrieval-Augmented Generation (RAG).
 
-Upload PDFs, automatically generate embeddings, search across documents, and chat with them using Retrieval-Augmented Generation (RAG).
-
----
-
-# Features
-
-- Upload PDF documents
-- Automatic embedding generation
-- Chat with uploaded documents
-- Search across all documents or a selected document
-- Delete unwanted documents
-- Duplicate document detection
-- Clear chat history
-- Azure OpenAI integration
-- Chroma Vector Database
-- Document Registry Management
+Developed as part of an AI R&D Internship at ZF Group.
 
 ---
 
-# 🛠 Tech Stack
+## ✨ Features
+
+- 📄 Upload and process PDF documents
+- 🔍 Semantic search using ChromaDB
+- 🤖 Chat with documents using Azure OpenAI
+- 🧠 Hybrid Retrieval (Vector Search + Knowledge Graph)
+- 🌐 Knowledge Graph built using Memgraph
+- 🏷️ Automatic entity extraction from documents
+- 💬 Persistent chat history with session management
+- 📂 Search across all documents or a selected document
+- 🗑️ Delete unwanted documents
+- 🚫 Duplicate document detection
+- 📚 Document registry management
+- 🎨 Interactive Streamlit interface
+
+---
+
+## 🏗️ Architecture
+
+```
+                Upload PDF
+                     │
+                     ▼
+              Document Loader
+                     │
+                     ▼
+             Text Splitter
+                     │
+         ┌───────────┴───────────┐
+         ▼                       ▼
+  Generate Embeddings     Extract Entities
+         │                       │
+         ▼                       ▼
+     ChromaDB             Memgraph Database
+         │                       │
+         └───────────┬───────────┘
+                     ▼
+              Hybrid Retrieval
+                     │
+                     ▼
+              Azure OpenAI LLM
+                     │
+                     ▼
+              Streamlit Interface
+```
+
+---
+
+## 🛠️ Tech Stack
 
 - Python
 - Streamlit
 - Azure OpenAI
-- ChromaDB
-- MongoDB
 - LangChain
+- ChromaDB
+- Memgraph
+- MongoDB
 - PyPDF
 - Sentence Transformers
 
 ---
 
-# 📷 Application Screenshots
-
-## Home
-
-![Home](Images/Home.png)
-
----
-
-## Upload Documents
-
-![Upload](Images/Upload_or_Embed Files.png)
-
----
-
-## Embedding Process
-
-![Embedding](Images/Embedding_process.png)
-
----
-
-## Ready for Questions
-
-![Ready](Images/Model_ready_for_Questions.png)
-
----
-
-## Chat Interface
-
-![Chat](Images/Chat_interface_with_Memory_and_Chat_history.png)
-
----
-
-## Search Within Selected Documents
-
-![Search](Images/Search_in_particular_Docs.png)
-
----
-
-## Delete Documents
-
-![Delete](Images/Delete_unwanted_Docs.png)
-
----
-
-## Duplicate Detection
-
-![Duplicate](Images/Detects_duplicate_files.png)
-
----
-
-## Clear Chat
-
-![Clear](Images/Clear_chat_to_restart.png)
-
----
-
-# 📂 Project Structure
+## 📁 Project Structure
 
 ```
-Document-Intelligence-Platform
+Automotive-Assistant
 │
 ├── app.py
 ├── requirements.txt
-├── Images/
-├── src/
-│   ├── embedding.py
-│   ├── ingest.py
-│   ├── retriever.py
-│   ├── rag_chain.py
-│   ├── vector_store.py
-│   ├── mongo_store.py
-│   ├── llm.py
-│   └── ...
+├── README.md
 │
-├── uploads/
-├── vector_db/
-└── README.md
+├── src
+│   ├── graph
+│   │   ├── entity_extractor.py
+│   │   ├── graph_builder.py
+│   │   └── memgraph_client.py
+│   │
+│   ├── ingestion
+│   │   ├── loader.py
+│   │   ├── splitter.py
+│   │   └── ingest.py
+│   │
+│   ├── retrieval
+│   │   ├── retriever.py
+│   │   ├── graph_retriever.py
+│   │   └── rag_chain.py
+│   │
+│   ├── memory
+│   │   ├── session_manager.py
+│   │   ├── history_store.py
+│   │   └── chat_history.py
+│   │
+│   ├── storage
+│   │   ├── vector_store.py
+│   │   ├── mongo_store.py
+│   │   └── document_registry.py
+│   │
+│   ├── llm
+│   │   └── llm.py
+│   │
+│   └── tests
+│
+├── uploads
+├── vector_db
+└── data
 ```
 
 ---
 
-# ⚙️ Installation
+## 🚀 Installation
+
+Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/Document-Intelligence-Platform.git
+git clone https://github.com/<your-username>/Automotive-Assistant.git
+```
 
-cd Document-Intelligence-Platform
+Navigate into the project
 
+```bash
+cd Automotive-Assistant
+```
+
+Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
+Run the application
+
+```bash
 streamlit run app.py
 ```
 
 ---
 
-# Environment Variables
+## 🔑 Environment Variables
 
-Create a `.env` file and configure the following:
+Create a `.env` file in the root directory and configure the following:
 
-```
+```env
 AZURE_OPENAI_API_KEY=
-
 AZURE_OPENAI_ENDPOINT=
-
-AZURE_OPENAI_DEPLOYMENT=
+AZURE_OPENAI_API_VERSION=
+AZURE_OPENAI_DEPLOYMENT_NAME=
 
 MONGODB_URI=
+
+MEMGRAPH_HOST=localhost
+MEMGRAPH_PORT=7687
 ```
 
 ---
 
-# Future Improvements
+## 📷 Application
 
-- Multi-user authentication
-- Support for DOCX, PPTX and Excel
-- OCR for scanned PDFs
-- Conversation export
-- Source highlighting
-- Cloud deployment
+The application supports:
+
+- Upload PDF documents
+- Automatic embedding generation
+- Knowledge graph construction
+- Chat with uploaded documents
+- Session-based conversation history
+- Search within selected documents
+- Document management
 
 ---
 
-# Author
+## 🧠 Retrieval Pipeline
+
+```
+User Question
+      │
+      ▼
+Entity Extraction
+      │
+      ▼
+Knowledge Graph Retrieval
+      │
+      ▼
+Vector Similarity Search
+      │
+      ▼
+Merge Context
+      │
+      ▼
+Azure OpenAI
+      │
+      ▼
+Generated Response + Sources
+```
+
+---
+
+## 🎯 Future Improvements
+
+- Full GraphRAG implementation
+- Automotive domain ontology
+- Graph visualization
+- OCR support for scanned PDFs
+- Support for DOCX, PPTX and Excel
+- Multi-user authentication
+- Docker deployment
+- Cloud deployment
+- Source highlighting inside documents
+
+---
+
+## 👨‍💻 Author
 
 **Dhyaanesh G**
 
-ZF Groups | AI R&D Intern
+AI R&D Intern – ZF Group
 
-NIT Trichy
+National Institute of Technology Tiruchirappalli (NIT Trichy)
+
+---
+
+## 📄 License
+
+This project is intended for educational and research purposes.
