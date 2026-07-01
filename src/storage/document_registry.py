@@ -26,6 +26,8 @@ def add_document(document_name):
     if document_name not in documents:
         documents.append(document_name)
 
+    print("Registry:", documents)
+
     save_documents(documents)
 
 

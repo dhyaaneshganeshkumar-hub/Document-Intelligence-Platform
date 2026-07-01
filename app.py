@@ -5,26 +5,45 @@ from src.retrieval.rag_chain import ask
 from src.ingestion.ingest import ingest_pdf
 from src.storage.document_registry import get_document_names
 from src.storage.vector_store import delete_document
+from src.memory.chat_history import (start_new_chat,
+                                    get_all_chats,
+                                    get_chat_history,
+                                    add_user_message,
+                                    add_assistant_message,
+                                    clear_chat,
+                                    get_chat,
+                                    rename_chat,
+                                    delete_chat
+                                    )
 
 # -----------------------------
 # Page Config
 # -----------------------------
 st.set_page_config(
-    page_title="Automotive AI Buddy",
+    page_title="AutoGraphRAG AI Buddy",
     layout="wide"
 )
 
 # -----------------------------
 # Session State
 # -----------------------------
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
 if "processed" not in st.session_state:
     st.session_state.processed = False
 
 if "current_file" not in st.session_state:
     st.session_state.current_file = None
+
+if "current_chat" not in st.session_state:
+
+    chats = get_all_chats()
+
+    if chats:
+        st.session_state.current_chat = chats[0]["session_id"]
+
+    else:
+        chat = start_new_chat()
+        st.session_state.current_chat = chat["session_id"]
 
 # -----------------------------
 # Header
@@ -100,6 +119,78 @@ documents = ["All Documents"] + get_document_names()
 selected_document = st.sidebar.selectbox("Search In", documents)
 
 st.sidebar.markdown("---")
+st.sidebar.subheader("Chats")
+
+if st.sidebar.button("➕ New Chat"):
+
+    chat = start_new_chat()
+
+    st.session_state.current_chat = chat["session_id"]
+
+    st.rerun()
+for chat in get_all_chats():
+
+    with st.sidebar.container(border=True):
+
+        title = chat["title"]
+
+        if chat["session_id"] == st.session_state.current_chat:
+            title = "🟢 " + title
+
+        if st.button(
+            title,
+            key=f"chat_{chat['session_id']}",
+            use_container_width=True
+        ):
+            st.session_state.current_chat = chat["session_id"]
+            st.rerun()
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button(
+                "✏️ Rename",
+                key=f"rename_{chat['session_id']}",
+                use_container_width=True
+            ):
+                st.session_state.rename_chat = chat["session_id"]
+
+        with col2:
+            if st.button(
+                "🗑 Delete",
+                key=f"delete_{chat['session_id']}",
+                use_container_width=True
+            ):
+                delete_chat(chat["session_id"])
+
+                chats = get_all_chats()
+
+                if chats:
+                    st.session_state.current_chat = chats[0]["session_id"]
+                else:
+                    new_chat = start_new_chat()
+                    st.session_state.current_chat = new_chat["session_id"]
+
+                st.rerun()
+
+if "rename_chat" in st.session_state:
+
+    chat_id = st.session_state.rename_chat
+
+    new_title = st.sidebar.text_input(
+        "Rename Chat",
+        key="rename_title"
+    )
+
+    if st.sidebar.button("Save Name"):
+
+        rename_chat(chat_id, new_title)
+
+        del st.session_state.rename_chat
+
+        st.rerun()
+
+st.sidebar.markdown("---")
 st.sidebar.subheader("🗑 Delete Document")
 
 documents_to_delete = get_document_names()
@@ -132,14 +223,17 @@ st.sidebar.markdown("---")
 
 if st.sidebar.button("🗑 Clear Chat"):
 
-    st.session_state.messages = []
+    clear_chat(st.session_state.current_chat)
     st.rerun()
 
 # -----------------------------
 # Welcome Screen
 # -----------------------------
+
+messages = get_chat_history(st.session_state.current_chat)
+
 if (
-    len(st.session_state.messages) == 0
+    len(messages) == 0
     and not st.session_state.processed
 ):
 
@@ -155,7 +249,11 @@ Try asking any Question:
 # -----------------------------
 # Display Previous Chat
 # -----------------------------
-for message in st.session_state.messages:
+messages = get_chat_history(
+    st.session_state.current_chat
+)
+
+for message in messages:
 
     with st.chat_message(message["role"]):
 
@@ -179,8 +277,8 @@ for message in st.session_state.messages:
                     shown.add(key)
 
                     st.caption(
-                    f"• {source['document']} - Page {source['page']}"
-                )
+                        f"• {source['document']} - Page {source['page']}"
+                    )
 
 # -----------------------------
 # Chat Input
@@ -192,23 +290,25 @@ question = st.chat_input(
 if question:
 
     if not st.session_state.processed:
-
         st.warning("⚠️ Please upload and process a PDF first.")
         st.stop()
 
     # Save user message
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": question
-        }
+    add_user_message(
+        st.session_state.current_chat,
+        question
     )
 
-    # Display user message
-    with st.chat_message("user"):
-        st.markdown(question)
+    chat = get_chat(st.session_state.current_chat)
 
-    # Assistant response
+    if chat["title"] == "New Chat":
+
+        rename_chat(
+            st.session_state.current_chat,
+            question[:40]
+        )
+
+    # Ask RAG
     with st.chat_message("assistant"):
 
         with st.spinner("Thinking..."):
@@ -226,7 +326,10 @@ if question:
 
         for source in sources:
 
-            key = (source["document"], source["page"])
+            key = (
+                source["document"],
+                source["page"]
+            )
 
             if key not in shown:
 
@@ -236,13 +339,12 @@ if question:
                     f"• {source['document']} - Page {source['page']}"
                 )
 
-
     # Save assistant response
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": answer,
-            "sources": sources
-        }
+    add_assistant_message(
+        st.session_state.current_chat,
+        answer,
+        sources
     )
-    
+
+    # Refresh page
+    st.rerun()

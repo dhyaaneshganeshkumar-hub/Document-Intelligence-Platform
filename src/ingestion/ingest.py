@@ -4,6 +4,8 @@ from src.ingestion.loader import load_pdf
 from src.ingestion.splitter import split_documents
 from src.storage.vector_store import vector_store, document_exists
 from src.storage.document_registry import add_document
+from src.graph.graph_builder import add_graph_document, add_chunk, add_entity, link_chunk_entity
+from src.graph.entity_extractor import extract_entities
 
 
 def ingest_pdf(filepath):
@@ -26,6 +28,24 @@ def ingest_pdf(filepath):
     print("Splitting...")
     chunks = split_documents(docs)
 
+    add_graph_document(document_name)
+
+    for i, chunk in enumerate(chunks):
+        chunk_id = f"{document_name}_{i}"
+
+        add_chunk(
+            chunk_id=chunk_id,
+            text=chunk.page_content,
+            document_name=document_name,
+        )
+
+        entities = extract_entities(chunk.page_content)
+        print("Entities:", entities)
+
+        for entity in entities:
+            add_entity(entity)
+            link_chunk_entity(chunk_id, entity)
+
     print("Chunks:", len(chunks))
 
     # Add metadata to every chunk
@@ -42,13 +62,12 @@ def ingest_pdf(filepath):
     print("Adding to Chroma...")
     vector_store.add_documents(chunks)
 
-    # Register document
     add_document(document_name)
 
     print("Done!")
 
-    return {
-        "status": "processed",
-        "document": document_name,
-        "chunks": len(chunks)
+    return{
+        "status" : "processed",
+        "document" : document_name,
+        "chunks" : len(chunks)
     }

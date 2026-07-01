@@ -2,6 +2,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import AzureChatOpenAI
 
 from src.retrieval.retriever import retrieve
+from src.retrieval.graph_retriever import search_entity
+from src.graph.entity_extractor import extract_entities
 
 import os
 
@@ -35,12 +37,30 @@ def ask(question, selected_document):
     print("Calling retriever...")
     docs = retrieve(question, selected_document)
 
+    entities = extract_entities(question)
+
+    print("=" * 60)
+    print("Extracted Entities:", entities)
+    print("=" * 60)
+
+    graph_context = []
+
+    for entity in entities:
+        graph_context.extend(search_entity(entity))
+
+    print("Entities:", entities)
+    print("Graph Context:", len(graph_context))
+
     print("Retrieved", len(docs), "documents")
 
-    context = "\n\n".join(
-        doc.page_content
-        for doc in docs
+    chroma_context = "\n\n".join(
+        doc.page_content for doc in docs
     )
+
+    graph_text = "\n\n".join(graph_context)
+
+    context_parts = [part for part in [graph_text, chroma_context] if part]
+    context = "\n\n".join(context_parts)
 
     sources = []
     for doc in docs:
