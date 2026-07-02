@@ -6,6 +6,9 @@ from src.storage.vector_store import vector_store, document_exists
 from src.storage.document_registry import add_document
 from src.graph.graph_builder import add_graph_document, add_chunk, add_entity, link_chunk_entity
 from src.graph.entity_extractor import extract_entities
+from src.ingestion.image_ingestion import process_pdf_images
+from src.graph.graph_builder import add_image, link_image_entity
+from langchain_core.documents import Document
 
 
 def ingest_pdf(filepath):
@@ -27,6 +30,46 @@ def ingest_pdf(filepath):
 
     print("Splitting...")
     chunks = split_documents(docs)
+
+    print("Processing Images...")
+    image_chunks = process_pdf_images(filepath)
+
+    for image in image_chunks:
+
+        image_id = f"{document_name}_img_{image['page']}_{image['image_index']}"
+
+        add_image(
+            image_id=image_id,
+            image_path=image["image_path"],
+            description=image["description"],
+            document_name=document_name,
+        )
+
+        image_entities = extract_entities(image["description"])
+
+        print("Image Entities:", image_entities)
+
+        for entity in image_entities:
+            add_entity(entity)
+            link_image_entity(image_id, entity)
+
+    image_documents = []
+
+    for image in image_chunks:
+        image_documents.append(
+             Document(
+                page_content=image["description"],
+                metadata={
+                    "document_name": document_name,
+                    "page": image["page"],
+                    "type": "image",
+                    "image_path": image["image_path"],
+                    "image_index": image["image_index"],
+            }
+        )
+    )
+
+    print(f"Images found:{len(image_chunks)}")
 
     add_graph_document(document_name)
 
@@ -59,8 +102,24 @@ def ingest_pdf(filepath):
             except ValueError:
                 chunk.metadata["page"] = chunk.metadata["page_label"]
 
-    print("Adding to Chroma...")
+    print("Adding text chunks...")
     vector_store.add_documents(chunks)
+
+    print("Adding image descriptions to Chroma...")
+    vector_store.add_documents(image_documents)
+
+    print("Adding image descriptions...")
+
+    for image in image_chunks:
+        vector_store.add_texts(
+            texts=[image["description"]],
+            metadatas=[{
+                "document_name": document_name,
+                "page": image["page"],
+                "type": "image",
+                "image_path": image["image_path"]
+            }]
+    )
 
     add_document(document_name)
 

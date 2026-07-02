@@ -54,3 +54,40 @@ def link_chunk_entity(chunk_id, entity_name):
             "entity": entity_name,
         },
     )
+
+def add_image(image_id, image_path, description, document_name):
+    query = """
+    MERGE (i:Image {id:$id})
+    SET i.path = $path,
+        i.description = $description
+
+    MERGE (d:Document {name:$doc})
+    MERGE (d)-[:HAS_IMAGE]->(i)
+    """
+
+    db.execute(
+        query,
+        {
+            "id": image_id,
+            "path": image_path,
+            "description": description,
+            "doc": document_name,
+        },
+    )
+
+def link_image_entity(image_id, entity_name):
+    query = """
+    MATCH (i:Image {id:$image})
+    MATCH (e:Entity {name:$entity})
+
+    MERGE (i)-[:MENTIONS]->(e)
+    """
+
+    db.execute(
+        query,
+        {
+            "image": image_id,
+            "entity": entity_name,
+        },
+    )
+

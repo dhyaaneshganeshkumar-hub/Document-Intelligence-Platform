@@ -6,15 +6,15 @@ from src.ingestion.ingest import ingest_pdf
 from src.storage.document_registry import get_document_names
 from src.storage.vector_store import delete_document
 from src.memory.chat_history import (start_new_chat,
-                                    get_all_chats,
-                                    get_chat_history,
-                                    add_user_message,
-                                    add_assistant_message,
-                                    clear_chat,
-                                    get_chat,
-                                    rename_chat,
-                                    delete_chat
-                                    )
+    get_all_chats,
+    get_chat_history,
+    add_user_message,
+    add_assistant_message,
+    clear_chat,
+    get_chat,
+    rename_chat,
+    delete_chat
+    )
 
 # -----------------------------
 # Page Config
@@ -338,7 +338,7 @@ if question:
                 st.caption(
                     f"• {source['document']} - Page {source['page']}"
                 )
-
+ 
     # Save assistant response
     add_assistant_message(
         st.session_state.current_chat,
@@ -347,4 +347,4 @@ if question:
     )
 
     # Refresh page
-    st.rerun()
+    # st.rerun()

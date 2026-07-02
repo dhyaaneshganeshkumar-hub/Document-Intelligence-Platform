@@ -19,4 +19,17 @@ def retrieve(query, selected_document=None, top_k=3):
             k=top_k
         )
 
-    return docs
+    for doc in docs:
+        print(doc.metadata)
+
+    text_docs = [
+        doc for doc in docs
+        if doc.metadata.get("type") != "image"
+        ]
+
+    image_docs = [
+        doc for doc in docs
+        if doc.metadata.get("type") == "image"
+        ]
+
+    return text_docs, image_docs

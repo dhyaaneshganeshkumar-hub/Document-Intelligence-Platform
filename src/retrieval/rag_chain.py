@@ -35,7 +35,12 @@ def ask(question, selected_document):
     print("Question:", question)
 
     print("Calling retriever...")
-    docs = retrieve(question, selected_document)
+    docs, image_docs = retrieve(
+        question,
+        selected_document
+        )
+
+    image_docs = [doc for doc in docs if doc.metadata.get("type") == "image"]
 
     entities = extract_entities(question)
 
@@ -53,9 +58,15 @@ def ask(question, selected_document):
 
     print("Retrieved", len(docs), "documents")
 
+    text_docs = [
+        doc for doc in docs
+        if doc.metadata.get("type") != "image"
+        ]
+
     chroma_context = "\n\n".join(
-        doc.page_content for doc in docs
-    )
+        doc.page_content
+        for doc in text_docs
+        )
 
     graph_text = "\n\n".join(graph_context)
 
@@ -92,6 +103,23 @@ def ask(question, selected_document):
 
     from pprint import pprint
     pprint(sources)
+
+    show_images = False
+
+    if image_docs:
+
+        image_pages = {
+            img.metadata.get("page")
+            for img in image_docs
+        }
+
+        text_pages = {
+            doc.metadata.get("page")
+            for doc in text_docs
+        }
+
+        if image_pages.intersection(text_pages):
+           show_images = True
 
     return{
         "answer": response.content,
